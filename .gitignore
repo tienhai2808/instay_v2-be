@@ -1,0 +1,4 @@
+config.yml
+app.log
+tmp
+.env*
