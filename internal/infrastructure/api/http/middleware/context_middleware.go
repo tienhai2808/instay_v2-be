@@ -7,6 +7,8 @@ import (
 	"runtime/debug"
 
 	"github.com/InstayPMS/backend/internal/application/dto"
+	"github.com/InstayPMS/backend/pkg/errors"
+	"github.com/InstayPMS/backend/pkg/utils"
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
 )
@@ -40,9 +42,27 @@ func (m *ContextMiddleware) Recovery() gin.HandlerFunc {
 		)
 
 		c.AbortWithStatusJSON(http.StatusInternalServerError, dto.APIResponse{
-			InternalCode: 500000,
-			Slug: "INTERNAL_SERVER_ERROR",
+			Code:    9000,
+			Slug:    "INTERNAL_SERVER_ERROR",
 			Message: "internal server error",
 		})
 	})
+}
+
+func (m *ContextMiddleware) ErrorHandler() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		c.Next()
+
+		err := c.Errors.Last()
+		if err == nil {
+			return
+		}
+
+		if apiErr, ok := err.Err.(*errors.APIError); ok {
+			utils.APIResponse(c, apiErr.Status, apiErr.Code, apiErr.Slug, apiErr.Message, nil)
+			return
+		}
+
+		utils.ISEResponse(c)
+	}
 }

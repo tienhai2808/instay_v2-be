@@ -13,3 +13,5 @@ go get github.com/spf13/viper (Load config)
 go get gopkg.in/natefinch/lumberjack.v2 (File rotation)
 
 go get github.com/minio/minio-go/v7 (File storage)
+
+go get github.com/go-playground/validator/v10 (Validator)

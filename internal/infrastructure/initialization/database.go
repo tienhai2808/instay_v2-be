@@ -13,14 +13,12 @@ import (
 	"gorm.io/gorm/logger"
 )
 
-var allModels = []any{}
-
-type DB struct {
+type Database struct {
 	Gorm *gorm.DB
 	sql  *sql.DB
 }
 
-func InitPostgreSQL(cfg *config.Config) (*DB, error) {
+func InitDatabase(cfg *config.Config) (*Database, error) {
 	dsn := fmt.Sprintf(
 		"host=%s dbname=%s user=%s password=%s sslmode=%s",
 		cfg.PostgreSQL.Host,
@@ -40,7 +38,7 @@ func InitPostgreSQL(cfg *config.Config) (*DB, error) {
 		},
 	)
 
-	gDB, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
+	pg, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
 		Logger:                 newLogger,
 		SkipDefaultTransaction: true,
 		PrepareStmt:            true,
@@ -49,24 +47,26 @@ func InitPostgreSQL(cfg *config.Config) (*DB, error) {
 		return nil, err
 	}
 
-	if err := runAutoMigrations(gDB); err != nil {
+	if err := runAutoMigrations(pg); err != nil {
 		return nil, err
 	}
 
-	sqlDB, err := gDB.DB()
+	sql, err := pg.DB()
 	if err != nil {
 		return nil, err
 	}
 
-	return &DB{
-		gDB,
-		sqlDB,
+	return &Database{
+		pg,
+		sql,
 	}, nil
 }
 
-func (d *DB) Close() {
+func (d *Database) Close() {
 	_ = d.sql.Close()
 }
+
+var allModels = []any{}
 
 func runAutoMigrations(db *gorm.DB) error {
 	return db.AutoMigrate(allModels...)

@@ -8,3 +8,7 @@ type UploadPresignedURLRequest struct {
 type UploadPresignedURLsRequest struct {
 	Files []UploadPresignedURLRequest `json:"files" binding:"required,min=1,dive"`
 }
+
+type ViewPresignedURLsRequest struct {
+	Keys []string `json:"keys" binding:"required,min=1,dive"`
+}

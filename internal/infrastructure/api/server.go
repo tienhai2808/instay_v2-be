@@ -12,33 +12,18 @@ import (
 	"github.com/InstayPMS/backend/internal/di"
 	"github.com/InstayPMS/backend/internal/infrastructure/api/http/router"
 	"github.com/InstayPMS/backend/internal/infrastructure/config"
-	"github.com/InstayPMS/backend/internal/infrastructure/initialization"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
-	"github.com/minio/minio-go/v7"
-	"go.uber.org/zap"
 )
 
 type Server struct {
 	cfg  *config.Config
 	http *http.Server
-	db   *initialization.DB
-	stor *minio.Client
-	log  *zap.Logger
+	ctn  *di.Container
 }
 
 func NewServer(cfg *config.Config) (*Server, error) {
-	db, err := initialization.InitPostgreSQL(cfg)
-	if err != nil {
-		return nil, err
-	}
-
-	stor, err := initialization.InitMinIO(cfg)
-	if err != nil {
-		return nil, err
-	}
-
-	log, err := initialization.InitZap(cfg)
+	ctn, err := di.NewContainer(cfg)
 	if err != nil {
 		return nil, err
 	}
@@ -59,9 +44,9 @@ func NewServer(cfg *config.Config) (*Server, error) {
 		gin.Logger(),
 		gin.Recovery(),
 		cors.New(corsConfig),
+		ctn.ContextMiddleware.ErrorHandler(),
+		ctn.ContextMiddleware.Recovery(),
 	)
-
-	ctn := di.NewContainer(stor)
 
 	api := router.NewRouter(r)
 	api.Setup(cfg.Server.APIPrefix, ctn)
@@ -80,9 +65,7 @@ func NewServer(cfg *config.Config) (*Server, error) {
 	return &Server{
 		cfg,
 		http,
-		db,
-		stor,
-		log,
+		ctn,
 	}, nil
 }
 
@@ -91,9 +74,7 @@ func (s *Server) Start() error {
 }
 
 func (s *Server) Shutdown(ctx context.Context) {
-	if s.db != nil {
-		s.db.Close()
-	}
+	s.ctn.Cleanup()
 
 	if s.http != nil {
 		if err := s.http.Shutdown(ctx); err != nil {
