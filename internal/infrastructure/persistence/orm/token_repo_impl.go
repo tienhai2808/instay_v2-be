@@ -22,15 +22,10 @@ func (r *tokenRepositoryImpl) Create(ctx context.Context, token *model.Token) er
 	return r.db.WithContext(ctx).Create(token).Error
 }
 
-func (r *tokenRepositoryImpl) UpdateByUserIDAndToken(
-	ctx context.Context,
-	userID int64,
-	token string,
-	updateData map[string]any,
-) error {
+func (r *tokenRepositoryImpl) UpdateByToken(ctx context.Context, token string, updateData map[string]any) error {
 	result := r.db.WithContext(ctx).
 		Model(&model.Token{}).
-		Where("user_id = ? AND token = ?", userID, token).
+		Where("token = ?", token).
 		Updates(updateData)
 	if result.Error != nil {
 		return result.Error

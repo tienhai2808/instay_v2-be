@@ -65,12 +65,6 @@ func (h *AuthHandler) Logout(c *gin.Context) {
 	ctx, cancel := context.WithTimeout(c.Request.Context(), 5*time.Second)
 	defer cancel()
 
-	userID := c.GetInt64(middleware.CtxUserID)
-	if userID == 0 {
-		c.Error(errors.ErrUnAuth)
-		return
-	}
-
 	accessTTLAny, ok := c.Get(middleware.CtxAccessTTL)
 	if !ok {
 		c.Error(errors.ErrUnAuth)
@@ -95,7 +89,7 @@ func (h *AuthHandler) Logout(c *gin.Context) {
 		return
 	}
 
-	if err := h.authUC.Logout(ctx, userID, accessToken, refreshToken, accessTTL); err != nil {
+	if err := h.authUC.Logout(ctx, accessToken, refreshToken, accessTTL); err != nil {
 		c.Error(err)
 		return
 	}
@@ -124,6 +118,27 @@ func (h *AuthHandler) RefreshToken(c *gin.Context) {
 	h.storeTokenInCookie(c, newAccessToken, newRefreshToken, int(h.cfg.JWT.AccessExpiresIn.Seconds()), int(h.cfg.JWT.RefreshExpiresIn.Seconds()))
 
 	utils.OKResponse(c, nil)
+}
+
+func (h *AuthHandler) GetMe(c *gin.Context) {
+	ctx, cancel := context.WithTimeout(c.Request.Context(), 5*time.Second)
+	defer cancel()
+
+	userID := c.GetInt64(middleware.CtxUserID)
+	if userID == 0 {
+		c.Error(errors.ErrUnAuth)
+		return
+	}
+
+	user, err := h.authUC.GetMe(ctx, userID)
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	utils.OKResponse(c, gin.H{
+		"user": mapper.ToUserResponse(user),
+	})
 }
 
 func (h *AuthHandler) storeTokenInCookie(

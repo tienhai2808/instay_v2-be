@@ -116,15 +116,10 @@ func (u *authUseCaseImpl) Login(ctx context.Context, ua string, req dto.LoginReq
 	return user, accessToken, refreshToken, nil
 }
 
-func (u *authUseCaseImpl) Logout(
-	ctx context.Context,
-	userID int64,
-	accessToken, refreshToken string,
-	accessTTL time.Duration,
-) error {
+func (u *authUseCaseImpl) Logout(ctx context.Context, accessToken, refreshToken string, accessTTL time.Duration) error {
 	hashedToken := utils.SHA256Hash(refreshToken)
 
-	if err := u.tokenRepo.UpdateByUserIDAndToken(ctx, userID, hashedToken, map[string]any{"revoked_at": time.Now()}); err != nil {
+	if err := u.tokenRepo.UpdateByToken(ctx, hashedToken, map[string]any{"revoked_at": time.Now()}); err != nil {
 		if errors.Is(err, customErr.ErrInvalidUser) {
 			return err
 		}
@@ -200,4 +195,18 @@ func (u *authUseCaseImpl) RefreshToken(ctx context.Context, ua, refreshToken str
 	}
 
 	return newAccessToken, newRefreshToken, nil
+}
+
+func (u *authUseCaseImpl) GetMe(ctx context.Context, userID int64) (*model.User, error) {
+	user, err := u.userRepo.FindByIDWithOutletAndDepartment(ctx, userID)
+	if err != nil {
+		u.log.Error("find user by id failed", zap.Int64("id", userID), zap.Error(err))
+		return nil, err
+	}
+
+	if user == nil {
+		return nil, customErr.ErrUnAuth
+	}
+
+	return user, nil
 }

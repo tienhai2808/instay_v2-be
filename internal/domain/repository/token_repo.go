@@ -9,7 +9,7 @@ import (
 type TokenRepository interface {
 	Create(ctx context.Context, token *model.Token) error
 
-	UpdateByUserIDAndToken(ctx context.Context, userID int64, token string, updateData map[string]any) error
+	UpdateByToken(ctx context.Context, token string, updateData map[string]any) error
 
 	FindByToken(ctx context.Context, token string) (*model.Token, error)
 }

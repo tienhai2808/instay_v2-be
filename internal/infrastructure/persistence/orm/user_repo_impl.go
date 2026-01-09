@@ -32,3 +32,19 @@ func (r *userRepositoryImpl) FindByUsernameWithOutletAndDepartment(ctx context.C
 
 	return &user, nil
 }
+
+func (r *userRepositoryImpl) FindByIDWithOutletAndDepartment(ctx context.Context, id int64) (*model.User, error) {
+	var user model.User
+	if err := r.db.WithContext(ctx).
+		Preload("Outlet").
+		Preload("Department").
+		Where("id = ?", id).
+		First(&user).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, nil
+		}
+		return nil, err
+	}
+
+	return &user, nil
+}

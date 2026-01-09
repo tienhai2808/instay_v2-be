@@ -14,5 +14,7 @@ func (r *Router) setupAuthRoutes(rg *gin.RouterGroup, authMid *middleware.AuthMi
 		auth.POST("/logout", authMid.IsAuthentication(), authMid.AttachTokens(), hdl.Logout)
 
 		auth.POST("/refresh-token", hdl.RefreshToken)
+
+		auth.GET("/me", authMid.IsAuthentication(), hdl.GetMe)
 	}
 }
