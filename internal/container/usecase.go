@@ -2,8 +2,8 @@ package container
 
 import (
 	authUC "github.com/InstayPMS/backend/internal/application/usecase/auth"
+	departmentUC "github.com/InstayPMS/backend/internal/application/usecase/department"
 	fileUC "github.com/InstayPMS/backend/internal/application/usecase/file"
-	outletUC "github.com/InstayPMS/backend/internal/application/usecase/outlet"
 	userUC "github.com/InstayPMS/backend/internal/application/usecase/user"
 )
 
@@ -12,7 +12,7 @@ func (c *Container) initUseCases() {
 
 	c.authUC = authUC.NewAuthUseCase(c.cfg.JWT, c.db.Gorm, c.Log, c.idGen, c.jwtPro, c.cachePro, c.MQPro, c.userRepo, c.tokenRepo)
 
-	c.userUC = userUC.NewUserUseCase(c.Log, c.idGen, c.userRepo, c.deptRepo)
+	c.userUC = userUC.NewUserUseCase(c.Log, c.idGen, c.userRepo, c.departmentRepo)
 
-	c.outletUC = outletUC.NewOutletUseCase(c.Log, c.idGen, c.outletRepo)
+	c.departmentUC = departmentUC.NewDepartmentUseCase(c.Log, c.idGen, c.departmentRepo)
 }

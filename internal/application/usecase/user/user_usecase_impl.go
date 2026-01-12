@@ -34,21 +34,6 @@ func NewUserUseCase(
 }
 
 func (u *userUseCaseImpl) CreateUser(ctx context.Context, userID int64, req dto.CreateUserRequest) (int64, error) {
-	if req.DepartmentID != nil {
-		dept, err := u.deptRepo.FindByID(ctx, *req.DepartmentID)
-		if err != nil {
-			u.log.Error("find department by id failed", zap.Error(err))
-			return 0, err
-		}
-		if dept == nil {
-			return 0, customErr.ErrDepartmentNotFound
-		}
-
-		if dept.OutletID != *req.OutletID {
-			return 0, customErr.ErrDepartmentDoesNotExistInOutlet
-		}
-	}
-
 	hashedPassword, err := utils.HashPassword(req.Password)
 	if err != nil {
 		u.log.Error("hash password failed", zap.Error(err))
@@ -71,7 +56,6 @@ func (u *userUseCaseImpl) CreateUser(ctx context.Context, userID int64, req dto.
 		Phone:        req.Phone,
 		Role:         req.Role,
 		IsActive:     req.IsActive,
-		OutletID:     req.OutletID,
 		DepartmentID: req.DepartmentID,
 		CreatedByID:  &userID,
 		UpdatedByID:  &userID,
@@ -89,7 +73,7 @@ func (u *userUseCaseImpl) CreateUser(ctx context.Context, userID int64, req dto.
 			}
 		}
 		if ok, _ := utils.IsForeignKeyViolation(err); ok {
-			return 0, customErr.ErrOutletNotFound
+			return 0, customErr.ErrDepartmentNotFound
 		}
 		u.log.Error("create user failed", zap.Error(err))
 		return 0, err

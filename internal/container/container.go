@@ -5,8 +5,8 @@ import (
 
 	"github.com/InstayPMS/backend/internal/application/port"
 	authUC "github.com/InstayPMS/backend/internal/application/usecase/auth"
+	departmentUC "github.com/InstayPMS/backend/internal/application/usecase/department"
 	fileUC "github.com/InstayPMS/backend/internal/application/usecase/file"
-	outletUC "github.com/InstayPMS/backend/internal/application/usecase/outlet"
 	userUC "github.com/InstayPMS/backend/internal/application/usecase/user"
 	"github.com/InstayPMS/backend/internal/domain/repository"
 	"github.com/InstayPMS/backend/internal/infrastructure/api/http/handler"
@@ -20,31 +20,30 @@ import (
 )
 
 type Container struct {
-	cfg        *config.Config
-	Log        *zap.Logger
-	db         *initialization.Database
-	cache      *redis.Client
-	mq         *initialization.MQ
-	stor       *minio.Client
-	idGen      *sonyflake.Sonyflake
-	jwtPro     port.JWTProvider
-	MQPro      port.MessageQueueProvider
-	cachePro   port.CacheProvider
-	SMTPPro    port.SMTPProvider
-	userRepo   repository.UserRepository
-	tokenRepo  repository.TokenRepository
-	deptRepo   repository.DepartmentRepository
-	outletRepo repository.OutletRepository
-	fileUC     fileUC.FileUseCase
-	authUC     authUC.AuthUseCase
-	userUC     userUC.UserUseCase
-	outletUC   outletUC.OutletUseCase
-	FileHdl    *handler.FileHandler
-	AuthHdl    *handler.AuthHandler
-	UserHdl    *handler.UserHandler
-	OutletHdl  *handler.OutletHandler
-	CtxMid     *middleware.ContextMiddleware
-	AuthMid    *middleware.AuthMiddleware
+	cfg            *config.Config
+	Log            *zap.Logger
+	db             *initialization.Database
+	cache          *redis.Client
+	mq             *initialization.MQ
+	stor           *minio.Client
+	idGen          *sonyflake.Sonyflake
+	jwtPro         port.JWTProvider
+	MQPro          port.MessageQueueProvider
+	cachePro       port.CacheProvider
+	SMTPPro        port.SMTPProvider
+	userRepo       repository.UserRepository
+	tokenRepo      repository.TokenRepository
+	departmentRepo repository.DepartmentRepository
+	fileUC         fileUC.FileUseCase
+	authUC         authUC.AuthUseCase
+	userUC         userUC.UserUseCase
+	departmentUC   departmentUC.DepartmentUseCase
+	FileHdl        *handler.FileHandler
+	AuthHdl        *handler.AuthHandler
+	UserHdl        *handler.UserHandler
+	DepartmentHdl  *handler.DepartmentHandler
+	CtxMid         *middleware.ContextMiddleware
+	AuthMid        *middleware.AuthMiddleware
 }
 
 func NewContainer(cfg *config.Config) (*Container, error) {

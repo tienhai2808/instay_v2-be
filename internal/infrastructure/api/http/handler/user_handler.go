@@ -67,15 +67,6 @@ func (h *UserHandler) CreateUser(c *gin.Context) {
 		}
 	}
 
-	if req.OutletID == nil && req.DepartmentID != nil {
-		c.Error(errors.ErrBadRequest.WithData(gin.H{
-			"field": "outletid",
-			"tag":   "required",
-			"param": "",
-		}))
-		return
-	}
-
 	id, err := h.userUC.CreateUser(ctx, userID, req)
 	if err != nil {
 		c.Error(err)
@@ -107,4 +98,8 @@ func (h *UserHandler) GetUserByID(c *gin.Context) {
 	utils.OKResponse(c, gin.H{
 		"user": mapper.ToUserDetailsResponse(user),
 	})
+}
+
+func (h *UserHandler) GetUsers(c *gin.Context) {
+	
 }

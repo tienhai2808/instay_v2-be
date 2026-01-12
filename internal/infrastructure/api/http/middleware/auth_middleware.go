@@ -20,7 +20,6 @@ const (
 	CtxAccessToken  = "access_token"
 	CtxRefreshToken = "refresh_token"
 	CtxAccessTTL    = "access_ttl"
-	CtxOutletID     = "outlet_id"
 	CtxRole         = "role"
 )
 
@@ -56,7 +55,7 @@ func (m *AuthMiddleware) IsAuthentication() gin.HandlerFunc {
 			return
 		}
 
-		userID, outletID, role, tokenVersion, ttl, err := m.jwtPro.ParseToken(accessToken)
+		userID, role, tokenVersion, ttl, err := m.jwtPro.ParseToken(accessToken)
 		if err != nil {
 			c.AbortWithStatusJSON(http.StatusUnauthorized, dto.APIResponse{
 				Code:    errors.ErrUnAuth.Code,
@@ -107,7 +106,6 @@ func (m *AuthMiddleware) IsAuthentication() gin.HandlerFunc {
 		}
 
 		c.Set(CtxUserID, userID)
-		c.Set(CtxOutletID, outletID)
 		c.Set(CtxRole, string(role))
 		c.Set(CtxAccessTTL, ttl)
 
@@ -142,28 +140,12 @@ func (m *AuthMiddleware) AttachTokens() gin.HandlerFunc {
 	}
 }
 
-func (m *AuthMiddleware) IsSystemAdministrator() gin.HandlerFunc {
+func (m *AuthMiddleware) HasRole(allowedRole model.UserRole) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		outletIDAny, exists := c.Get(CtxOutletID)
-		if !exists {
-			c.AbortWithStatusJSON(http.StatusForbidden, dto.APIResponse{
-				Code:    errors.ErrInvalidUser.Code,
-				Message: errors.ErrInvalidUser.Message,
-			})
-			return
-		}
-
-		outletID, ok := outletIDAny.(*int64)
-		if !ok || outletID != nil {
-			c.AbortWithStatusJSON(http.StatusForbidden, dto.APIResponse{
-				Code:    errors.ErrForbidden.Code,
-				Message: errors.ErrForbidden.Message,
-			})
-			return
-		}
-
 		roleStr := c.GetString(CtxRole)
-		if roleStr == "" || !model.IsValidRole(roleStr) {
+		role := model.UserRole(roleStr)
+
+		if roleStr == "" || !model.IsValidRole(role) || role != allowedRole {
 			c.AbortWithStatusJSON(http.StatusForbidden, dto.APIResponse{
 				Code:    errors.ErrForbidden.Code,
 				Message: errors.ErrForbidden.Message,

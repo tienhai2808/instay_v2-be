@@ -39,11 +39,7 @@ var (
 
 	ErrInvalidID = NewAPIError(http.StatusBadRequest, constants.CodeInvalidID, "Invalid id")
 
-	ErrDepartmentDoesNotExistInOutlet = NewAPIError(http.StatusConflict, constants.CodeDepartmentDoesNotExistInOutlet, "Department does not exist in outlet")
-
 	ErrUsernameAlreadyExists = NewAPIError(http.StatusConflict, constants.CodeUsernameAlreadyExists, "Username already exists")
-
-	ErrOutletNotFound = NewAPIError(http.StatusNotFound, constants.CodeOutletNotFound, "Outlet not found")
 )
 
 type APIError struct {

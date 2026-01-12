@@ -37,7 +37,7 @@ func main() {
 func adminSeeder(db *gorm.DB, idGen *sonyflake.Sonyflake, username, password string) error {
 	var count int64
 	if err := db.Model(&model.User{}).
-		Where("role = ? AND department_id IS NULL AND outlet_id IS NULL", model.RoleAdmin).
+		Where("role = ? AND department_id IS NULL", model.RoleAdmin).
 		Count(&count).Error; err != nil {
 		return fmt.Errorf("check admin failed: %w", err)
 	}

@@ -31,7 +31,6 @@ type UserResponse struct {
 	FirstName  string                   `json:"first_name"`
 	LastName   string                   `json:"last_name"`
 	CreatedAt  time.Time                `json:"created_at"`
-	Outlet     *SimpleOutletResponse    `json:"outlet"`
 	Department *BasicDepartmentResponse `json:"department"`
 }
 
@@ -46,7 +45,6 @@ type UserDetailsResponse struct {
 	LastName   string                   `json:"last_name"`
 	CreatedAt  time.Time                `json:"created_at"`
 	UpdatedAt  time.Time                `json:"updated_at"`
-	Outlet     *SimpleOutletResponse    `json:"outlet"`
 	Department *BasicDepartmentResponse `json:"department"`
 	CreatedBy  *BasicUserResponse       `json:"created_by"`
 	UpdatedBy  *BasicUserResponse       `json:"updated_by"`
@@ -60,11 +58,6 @@ type BasicUserResponse struct {
 }
 
 type BasicDepartmentResponse struct {
-	ID   int64  `json:"id"`
-	Name string `json:"name"`
-}
-
-type SimpleOutletResponse struct {
 	ID   int64  `json:"id"`
 	Name string `json:"name"`
 }

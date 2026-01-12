@@ -27,10 +27,9 @@ func (r *userRepositoryImpl) Create(ctx context.Context, user *model.User) error
 	return r.db.WithContext(ctx).Create(user).Error
 }
 
-func (r *userRepositoryImpl) FindByUsernameWithOutletAndDepartment(ctx context.Context, username string) (*model.User, error) {
+func (r *userRepositoryImpl) FindByUsernameWithDepartment(ctx context.Context, username string) (*model.User, error) {
 	var user model.User
 	if err := r.db.WithContext(ctx).
-		Preload("Outlet").
 		Preload("Department").
 		Where("username = ?", username).
 		First(&user).Error; err != nil {
@@ -43,16 +42,12 @@ func (r *userRepositoryImpl) FindByUsernameWithOutletAndDepartment(ctx context.C
 	return &user, nil
 }
 
-func (r *userRepositoryImpl) FindByIDWithOutletAndDepartment(ctx context.Context, id int64) (*model.User, error) {
-	return findByIDBase(r.db.WithContext(ctx), id,
-		Preload{Relation: "Outlet"},
-		Preload{Relation: "Department"},
-	)
+func (r *userRepositoryImpl) FindByIDWithDepartment(ctx context.Context, id int64) (*model.User, error) {
+	return findByIDBase(r.db.WithContext(ctx), id, Preload{Relation: "Department"})
 }
 
 func (r *userRepositoryImpl) FindByIDWithDetails(ctx context.Context, id int64) (*model.User, error) {
 	return findByIDBase(r.db.WithContext(ctx), id,
-		Preload{Relation: "Outlet"},
 		Preload{Relation: "Department"},
 		Preload{Relation: "CreatedBy"},
 		Preload{Relation: "UpdatedBy"},

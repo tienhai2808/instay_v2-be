@@ -60,7 +60,7 @@ func NewAuthUseCase(
 }
 
 func (u *authUseCaseImpl) Login(ctx context.Context, ua string, req dto.LoginRequest) (*model.User, string, string, error) {
-	user, err := u.userRepo.FindByUsernameWithOutletAndDepartment(ctx, req.Username)
+	user, err := u.userRepo.FindByUsernameWithDepartment(ctx, req.Username)
 	if err != nil {
 		u.log.Error("find user by username failed", zap.String("username", req.Username), zap.Error(err))
 		return nil, "", "", err
@@ -87,7 +87,7 @@ func (u *authUseCaseImpl) Login(ctx context.Context, ua string, req dto.LoginReq
 		tokenVersion = 1
 	}
 
-	accessToken, err := u.jwtPro.GenerateToken(user.ID, user.OutletID, user.Role, tokenVersion, u.cfg.AccessExpiresIn)
+	accessToken, err := u.jwtPro.GenerateToken(user.ID, user.Role, tokenVersion, u.cfg.AccessExpiresIn)
 	if err != nil {
 		u.log.Error("generate access token failed", zap.Error(err))
 		return nil, "", "", err
@@ -144,9 +144,6 @@ func (u *authUseCaseImpl) Logout(ctx context.Context, accessToken, refreshToken 
 func (u *authUseCaseImpl) RefreshToken(ctx context.Context, ua, refreshToken string) (string, string, error) {
 	hashedToken := utils.SHA256Hash(refreshToken)
 
-	fmt.Printf("Token gửi lên: %s", refreshToken)
-	fmt.Printf("Token đã hash: %s", hashedToken)
-
 	token, err := u.tokenRepo.FindByToken(ctx, hashedToken)
 	if err != nil {
 		u.log.Error("find token by token failed", zap.Error(err))
@@ -175,7 +172,7 @@ func (u *authUseCaseImpl) RefreshToken(ctx context.Context, ua, refreshToken str
 		return "", "", customErr.ErrInvalidUser
 	}
 
-	newAccessToken, err := u.jwtPro.GenerateToken(user.ID, user.OutletID, user.Role, tokenVersion, u.cfg.AccessExpiresIn)
+	newAccessToken, err := u.jwtPro.GenerateToken(user.ID, user.Role, tokenVersion, u.cfg.AccessExpiresIn)
 	if err != nil {
 		u.log.Error("generate access token failed", zap.Error(err))
 		return "", "", err
@@ -211,7 +208,7 @@ func (u *authUseCaseImpl) RefreshToken(ctx context.Context, ua, refreshToken str
 }
 
 func (u *authUseCaseImpl) GetMe(ctx context.Context, userID int64) (*model.User, error) {
-	user, err := u.userRepo.FindByIDWithOutletAndDepartment(ctx, userID)
+	user, err := u.userRepo.FindByIDWithDepartment(ctx, userID)
 	if err != nil {
 		u.log.Error("find user by id failed", zap.Int64("id", userID), zap.Error(err))
 		return nil, err
@@ -444,7 +441,7 @@ func (u *authUseCaseImpl) UpdateInfo(ctx context.Context, userID int64, req dto.
 		return nil, err
 	}
 
-	user, err := u.userRepo.FindByIDWithOutletAndDepartment(ctx, userID)
+	user, err := u.userRepo.FindByIDWithDepartment(ctx, userID)
 	if err != nil {
 		u.log.Error("find user by id failed", zap.Int64("id", userID), zap.Error(err))
 		return nil, err

@@ -69,7 +69,6 @@ func (d *Database) Close() {
 }
 
 var allModels = []any{
-	&model.Outlet{},
 	&model.Department{},
 	&model.User{},
 	&model.Token{},

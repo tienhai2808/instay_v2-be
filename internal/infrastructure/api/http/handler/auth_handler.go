@@ -281,9 +281,7 @@ func (h *AuthHandler) UpdateInfo(c *gin.Context) {
 
 func (h *AuthHandler) storeTokenInCookie(c *gin.Context, accessToken, refreshToken string, accessExpiresIn, refreshExpiresIn int) {
 	isSecure := c.Request.TLS != nil || c.GetHeader("X-Forwarded-Proto") == "https"
-	fmt.Println(isSecure)
 	domain := utils.ExtractRootDomain(c.Request.Host)
-	fmt.Println(domain)
 
 	c.SetSameSite(http.SameSiteLaxMode)
 	c.SetCookie(

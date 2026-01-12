@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/InstayPMS/backend/internal/application/dto"
-	outletUC "github.com/InstayPMS/backend/internal/application/usecase/outlet"
+	departmentUC "github.com/InstayPMS/backend/internal/application/usecase/department"
 	"github.com/InstayPMS/backend/internal/infrastructure/api/http/middleware"
 	"github.com/InstayPMS/backend/pkg/constants"
 	"github.com/InstayPMS/backend/pkg/errors"
@@ -15,15 +15,15 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type OutletHandler struct {
-	outletUC outletUC.OutletUseCase
+type DepartmentHandler struct {
+	departmentUC departmentUC.DepartmentUseCase
 }
 
-func NewOutletHandler(outletUC outletUC.OutletUseCase) *OutletHandler {
-	return &OutletHandler{outletUC}
+func NewDepartmentHandler(departmentUC departmentUC.DepartmentUseCase) *DepartmentHandler {
+	return &DepartmentHandler{departmentUC}
 }
 
-func (h *OutletHandler) CreateOutlet(c *gin.Context) {
+func (h *DepartmentHandler) CreateDepartment(c *gin.Context) {
 	ctx, cancel := context.WithTimeout(c.Request.Context(), 5*time.Second)
 	defer cancel()
 
@@ -33,7 +33,7 @@ func (h *OutletHandler) CreateOutlet(c *gin.Context) {
 		return
 	}
 
-	var req dto.CreateOutletRequest
+	var req dto.CreateDepartmentRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		field, tag, param := validator.HandleRequestError(err)
 		c.Error(errors.ErrBadRequest.WithData(gin.H{
@@ -44,13 +44,13 @@ func (h *OutletHandler) CreateOutlet(c *gin.Context) {
 		return
 	}
 
-	id, err := h.outletUC.CreateOutlet(ctx, userID, req)
+	id, err := h.departmentUC.CreateDepartment(ctx, userID, req)
 	if err != nil {
 		c.Error(err)
 		return
 	}
 
-	utils.APIResponse(c, http.StatusCreated, constants.CodeCreateOutletSuccess, "Outlet created successfully", gin.H{
-		"outlet_id": id,
+	utils.APIResponse(c, http.StatusCreated, constants.CodeCreateDepartmentSuccess, "Department created successfully", gin.H{
+		"department_id": id,
 	})
 }

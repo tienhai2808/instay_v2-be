@@ -5,17 +5,6 @@ import (
 	"github.com/InstayPMS/backend/internal/domain/model"
 )
 
-func ToSimpleOutletResponse(outlet *model.Outlet) *dto.SimpleOutletResponse {
-	if outlet == nil {
-		return nil
-	}
-
-	return &dto.SimpleOutletResponse{
-		ID:   outlet.ID,
-		Name: outlet.Name,
-	}
-}
-
 func ToBasicDepartmentResponse(dept *model.Department) *dto.BasicDepartmentResponse {
 	if dept == nil {
 		return nil
@@ -55,7 +44,6 @@ func ToUserResponse(usr *model.User) *dto.UserResponse {
 		Role:       usr.Role,
 		IsActive:   usr.IsActive,
 		CreatedAt:  usr.CreatedAt,
-		Outlet:     ToSimpleOutletResponse(usr.Outlet),
 		Department: ToBasicDepartmentResponse(usr.Department),
 	}
 }
@@ -76,7 +64,6 @@ func ToUserDetailsResponse(usr *model.User) *dto.UserDetailsResponse {
 		IsActive:   usr.IsActive,
 		CreatedAt:  usr.CreatedAt,
 		UpdatedAt:  usr.UpdatedAt,
-		Outlet:     ToSimpleOutletResponse(usr.Outlet),
 		Department: ToBasicDepartmentResponse(usr.Department),
 		CreatedBy:  ToBasicUserResponse(usr.CreatedBy),
 		UpdatedBy:  ToBasicUserResponse(usr.UpdatedBy),

@@ -59,9 +59,7 @@ func (c *Container) initInfrastructure() error {
 
 	c.tokenRepo = orm.NewTokenRepository(c.db.Gorm)
 
-	c.outletRepo = orm.NewOutletRepository(c.db.Gorm)
-
-	c.deptRepo = orm.NewDepartmentRepository(c.db.Gorm)
+	c.departmentRepo = orm.NewDepartmentRepository(c.db.Gorm)
 
 	c.CtxMid = middleware.NewContextMiddleware(log)
 

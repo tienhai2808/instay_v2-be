@@ -1,4 +1,4 @@
-package outlet
+package department
 
 import (
 	"context"
@@ -12,48 +12,50 @@ import (
 	"go.uber.org/zap"
 )
 
-type outletUseCaseImpl struct {
-	log        *zap.Logger
-	idGen      *sonyflake.Sonyflake
-	outletRepo repository.OutletRepository
+type departmentUseCaseImpl struct {
+	log            *zap.Logger
+	idGen          *sonyflake.Sonyflake
+	departmentRepo repository.DepartmentRepository
 }
 
-func NewOutletUseCase(
+func NewDepartmentUseCase(
 	log *zap.Logger,
 	idGen *sonyflake.Sonyflake,
-	outletRepo repository.OutletRepository,
-) OutletUseCase {
-	return &outletUseCaseImpl{
+	departmentRepo repository.DepartmentRepository,
+) DepartmentUseCase {
+	return &departmentUseCaseImpl{
 		log,
 		idGen,
-		outletRepo,
+		departmentRepo,
 	}
 }
 
-func (u *outletUseCaseImpl) CreateOutlet(ctx context.Context, userID int64, req dto.CreateOutletRequest) (int64, error) {
+func (u *departmentUseCaseImpl) CreateDepartment(ctx context.Context, userID int64, req dto.CreateDepartmentRequest) (int64, error) {
 	id, err := u.idGen.NextID()
 	if err != nil {
-		u.log.Error("generate outlet id failed", zap.Error(err))
+		u.log.Error("generate department id failed", zap.Error(err))
 		return 0, err
 	}
 
-	outlet := &model.Outlet{
+	dept := &model.Department{
 		ID:          id,
 		Name:        req.Name,
 		Description: req.Description,
 		IsActive:    req.IsActive,
+		CreatedByID: &userID,
+		UpdatedByID: &userID,
 	}
 
-	if err = u.outletRepo.Create(ctx, outlet); err != nil {
+	if err = u.departmentRepo.Create(ctx, dept); err != nil {
 		if ok, constraint := utils.IsUniqueViolation(err); ok {
 			switch constraint {
-			case "outlets_name_key":
+			case "departments_name_key":
 				return 0, customErr.ErrNameAlreadyExists
-			case "outlets_phone_key":
+			case "departments_phone_key":
 				return 0, customErr.ErrPhoneAlreadyExists
 			}
 		}
-		u.log.Error("create outlet failed", zap.Error(err))
+		u.log.Error("create department failed", zap.Error(err))
 		return 0, err
 	}
 

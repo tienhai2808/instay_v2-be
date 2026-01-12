@@ -10,9 +10,9 @@ import (
 type UserRepository interface {
 	Create(ctx context.Context, user *model.User) error
 	
-	FindByUsernameWithOutletAndDepartment(ctx context.Context, username string) (*model.User, error)
+	FindByUsernameWithDepartment(ctx context.Context, username string) (*model.User, error)
 
-	FindByIDWithOutletAndDepartment(ctx context.Context, id int64) (*model.User, error)
+	FindByIDWithDepartment(ctx context.Context, id int64) (*model.User, error)
 
 	FindByIDWithDetails(ctx context.Context, id int64) (*model.User, error)
 

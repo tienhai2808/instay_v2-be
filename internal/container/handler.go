@@ -9,5 +9,5 @@ func (c *Container) initHandlers() {
 
 	c.UserHdl = handler.NewUserHandler(c.userUC)
 
-	c.OutletHdl = handler.NewOutletHandler(c.outletUC)
+	c.DepartmentHdl = handler.NewDepartmentHandler(c.departmentUC)
 }
