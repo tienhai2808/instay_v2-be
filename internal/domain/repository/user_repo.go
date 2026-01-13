@@ -34,4 +34,6 @@ type UserRepository interface {
 	DeleteTx(tx *gorm.DB, id int64) error
 
 	DeleteAllByIDsTx(tx *gorm.DB, ids []int64) (int64, error)
+
+	ExistsActiveAdmin(ctx context.Context) (bool, error)
 }

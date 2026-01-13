@@ -38,8 +38,8 @@ func NewServer(cfg *config.Config, ctn *container.Container) *Server {
 		gin.Logger(),
 		gin.Recovery(),
 		cors.New(corsConfig),
-		ctn.CtxMid.ErrorHandler(),
-		ctn.CtxMid.Recovery(),
+		ctn.CtxHTTPMid.ErrorHandler(),
+		ctn.CtxHTTPMid.Recovery(),
 	)
 
 	api := router.NewRouter(r)

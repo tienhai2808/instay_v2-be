@@ -6,7 +6,6 @@ import (
 	"github.com/InstaySystem/is_v2-be/internal/container"
 	"github.com/InstaySystem/is_v2-be/internal/infrastructure/api"
 	"github.com/InstaySystem/is_v2-be/internal/infrastructure/config"
-	"github.com/InstaySystem/is_v2-be/internal/infrastructure/worker"
 )
 
 func main() {
@@ -15,15 +14,13 @@ func main() {
 		log.Fatalln(err)
 	}
 
-	ctn, err := container.NewContainer(cfg)
-	if err != nil {
+	ctn := container.NewContainer(cfg)
+	if err := ctn.InitServer(); err != nil {
 		log.Fatalln(err)
 	}
+	defer ctn.Cleanup()
 
 	sv := api.NewServer(cfg, ctn)
-
-	mqWorker := worker.NewMessageQueueWorker(ctn.MQPro, ctn.SMTPPro, ctn.Log)
-	mqWorker.Start()
 
 	ch := make(chan error, 1)
 	go func() {
@@ -35,6 +32,4 @@ func main() {
 	log.Printf("Server is running at: http://localhost:%d", cfg.Server.Port)
 
 	sv.GracefulShutdown(ch)
-
-	ctn.Cleanup()
 }

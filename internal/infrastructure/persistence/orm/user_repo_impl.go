@@ -121,7 +121,19 @@ func (r *userRepositoryImpl) ExistsActiveAdminExceptID(ctx context.Context, id i
 	var count int64
 	if err := r.db.WithContext(ctx).
 		Model(&model.User{}).
-		Where("role = 'admin' AND is_active = true AND id <> ?", id).
+		Where("role = ? AND is_active = true AND id <> ?", model.RoleAdmin, id).
+		Count(&count).Error; err != nil {
+		return false, err
+	}
+
+	return count > 0, nil
+}
+
+func (r *userRepositoryImpl) ExistsActiveAdmin(ctx context.Context) (bool, error) {
+	var count int64
+	if err := r.db.WithContext(ctx).
+		Model(&model.User{}).
+		Where("role = ? AND is_active = true", model.RoleAdmin).
 		Count(&count).Error; err != nil {
 		return false, err
 	}

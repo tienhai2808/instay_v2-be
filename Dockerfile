@@ -22,14 +22,14 @@ COPY . .
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build \
     -ldflags="-w -s" \
     -trimpath \
-    -o healthcheck ./cmd/healthcheck/healthcheck.go
+    -o healthcheck ./cmd/healthcheck/main.go
 
 RUN --mount=type=cache,target=/go/pkg/mod \
     --mount=type=cache,target=/root/.cache/go-build \
     CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build \
     -ldflags="-w -s -X main.Version=${VERSION} -X main.CommitSHA=${COMMIT_SHA} -X main.BuildDate=${BUILD_DATE}" \
     -trimpath \
-    -o main ./cmd/instay/main.go
+    -o api ./cmd/instay/main.go
 
 FROM gcr.io/distroless/static-debian12:nonroot AS production
 
@@ -37,7 +37,7 @@ WORKDIR /app
 
 COPY --from=builder --chown=nonroot:nonroot /app/healthcheck .
 
-COPY --from=builder --chown=nonroot:nonroot /app/main .
+COPY --from=builder --chown=nonroot:nonroot /app/api .
 
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
   CMD ["./healthcheck"]
@@ -48,4 +48,4 @@ ENV GIN_MODE=release
 
 EXPOSE 8080
 
-CMD ["./main"]
+CMD ["./api"]

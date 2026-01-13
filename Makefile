@@ -4,15 +4,33 @@ BIN := $(TMP_DIR)/main
 DOCKERFILE_DIR := .
 ENVFILE_DIR := .env.local
 
-.PHONY: build run clean github docker-br docker-rm
+.PHONY: build-sv run-sv build-csm run-csm build-sd run-sd clean github docker-br docker-rm
 
 # Require Ubuntu
-build:
+build-sv:
 	@echo "Building..."
 	@mkdir -p $(TMP_DIR)
-	go build -o $(BIN) ./cmd/instay
+	go build -o $(BIN) ./cmd/server
 
-run: build
+run-sv: build-sv
+	@echo "Running..."
+	@$(BIN)
+
+build-csm:
+	@echo "Building..."
+	@mkdir -p $(TMP_DIR)
+	go build -o $(BIN) ./cmd/consumer
+
+run-csm: build-csm
+	@echo "Running..."
+	@$(BIN)
+
+build-sd:
+	@echo "Building..."
+	@mkdir -p $(TMP_DIR)
+	go build -o $(BIN) ./cmd/seeder
+
+run-sd: build-sd
 	@echo "Running..."
 	@$(BIN)
 

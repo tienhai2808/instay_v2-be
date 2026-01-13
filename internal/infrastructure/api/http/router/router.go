@@ -23,11 +23,11 @@ func (r *Router) Setup(cfg config.ServerConfig, ctn *container.Container) {
 		c.JSON(http.StatusOK, "pong")
 	})
 
-	r.setupFileRoutes(v2, ctn.FileHdl)
+	r.setupFileRoutes(v2, ctn.FileHTTPHdl)
 
-	r.setupAuthRoutes(v2, ctn.AuthMid, ctn.AuthHdl)
+	r.setupAuthRoutes(v2, ctn.AuthHTTPMid, ctn.AuthHTTPHdl)
 
-	r.setupUserRoutes(v2, ctn.AuthMid, ctn.UserHdl)
+	r.setupUserRoutes(v2, ctn.AuthHTTPMid, ctn.UserHTTPHdl)
 
-	r.setupDepartmentRoutes(v2, ctn.AuthMid, ctn.DepartmentHdl)
+	r.setupDepartmentRoutes(v2, ctn.AuthHTTPMid, ctn.DepartmentHTTPHdl)
 }
