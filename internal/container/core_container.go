@@ -24,7 +24,7 @@ func (c *Container) initCore() (err error) {
 		return err
 	}
 
-	c.stor, err = initialization.InitMinIO(c.cfg.MinIO)
+	c.stor, err = initialization.InitS3(c.cfg.MinIO)
 	if err != nil {
 		return err
 	}

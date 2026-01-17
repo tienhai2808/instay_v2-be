@@ -16,7 +16,7 @@ import (
 	"github.com/InstaySystem/is_v2-be/internal/infrastructure/persistence/orm"
 	"github.com/InstaySystem/is_v2-be/internal/infrastructure/provider/rabbitmq"
 	"github.com/InstaySystem/is_v2-be/internal/infrastructure/provider/smtp"
-	"github.com/minio/minio-go/v7"
+	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"github.com/redis/go-redis/v9"
 	"github.com/sony/sonyflake/v2"
 	"go.uber.org/zap"
@@ -28,7 +28,7 @@ type Container struct {
 	DB                *initialization.Database
 	cache             *redis.Client
 	mq                *initialization.MQ
-	stor              *minio.Client
+	stor              *s3.Client
 	IDGen             *sonyflake.Sonyflake
 	jwtPro            port.JWTProvider
 	MQPro             port.MessageQueueProvider

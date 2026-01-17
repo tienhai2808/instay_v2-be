@@ -13,7 +13,7 @@ func (c *Container) initLogic() {
 	c.TokenRepo = orm.NewTokenRepository(c.DB.Gorm)
 	c.departmentRepo = orm.NewDepartmentRepository(c.DB.Gorm)
 
-	c.fileUC = fileUC.NewFileUseCase(c.cfg, c.stor, c.Log)
+	c.fileUC = fileUC.NewFileUseCase(c.cfg.MinIO, c.stor, c.Log)
 	c.authUC = authUC.NewAuthUseCase(c.cfg.JWT, c.DB.Gorm, c.Log, c.IDGen, c.jwtPro, c.cachePro, c.MQPro, c.UserRepo, c.TokenRepo)
 	c.userUC = userUC.NewUserUseCase(c.DB.Gorm, c.Log, c.IDGen, c.cachePro, c.UserRepo, c.departmentRepo, c.TokenRepo)
 	c.departmentUC = departmentUC.NewDepartmentUseCase(c.Log, c.IDGen, c.departmentRepo)
